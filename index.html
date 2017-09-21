@@ -1,0 +1,40 @@
+<head>
+    <link rel="stylesheet" type="text/css" href="style.css">
+    <link rel="stylesheet" type="text/css" href="animate.css">
+</head>
+
+<body style="background-Color:#419D78;">
+    <div class="master">
+        <form>
+            <div class="input-group configs">
+                <input type="number" class="form-control text-input" id="minutesToStart" value="22" min="1" max="59" 
+                title="Enter meeting time in minutes!" onchange="setParamsTimer()" onkeyup="setParamsTimer()"/>
+                <button class="btn btn-primary" type="button" id="buttonPlay" onclick="playTimer()">
+                    <i class="glyphicon glyphicon-play"></i> Play Daily</button>
+                <button class="btn btn-danger" type="button" id="buttonPause" onclick="pauseTimer()">
+                    <i class="glyphicon glyphicon-pause"></i> Pause Daily</button>
+                <button class="btn btn-warning" type="button" id="buttonReset" onclick="resetTimer()">
+                    <i class="glyphicon glyphicon-refresh"></i> Reset Daily</button>
+                <label><input id="mustPlaySound" type="checkbox" checked="true" onchange="fnMustPlaySounds()"> Play Sounds?</label>
+            </div>
+        </form>
+        <div class="timer" id="timer"><span id="minutes"></span>:<span id="seconds"></span></div>
+        <div class="finished-message" id="finished-message"><span>Daily Finished!</span></div>
+    </div>
+</body>
+
+
+<script src="index.js"></script>
+
+
+
+<!-- Latest compiled and minified CSS -->
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+
+<!-- jQuery library -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+
+<!-- Latest compiled JavaScript -->
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+
+<script src="bootstrap-notify.min.js"></script>

@@ -1,0 +1,56 @@
+.timer{
+		background-color:#419D78;
+		color:#FFF;
+		font-size:400px;
+		font-family: Cambria;
+		text-align:center;
+		margin-top: -20px;
+	}
+	
+.configs{
+		width: 700px;
+		margin: 15px;
+		position: relative;
+	}
+
+.btn{
+	margin: 15px;
+}
+
+.text-input{
+	margin: 15px;
+	width: 75px !important;
+	font-size: 20px !important;
+}
+
+.my-checkbox{
+	margin-top: 10px;
+	width: 100px;
+}
+
+label {
+  display: block;
+  padding-left: 15px;
+}
+label input {
+  width: 13px;
+  height: 13px;
+  padding: 0;
+  vertical-align: -3px;
+  top: -1px;
+  *overflow: hidden;
+}
+
+.finished-message{
+	margin-top: 100px;
+	color:#FFF;
+	font-size:200px;
+	font-family: Cambria;
+	text-align:center;
+
+	animation: blinker 1s linear infinite;
+}
+
+@keyframes blinker {  
+  50% { opacity: 0; }
+}
