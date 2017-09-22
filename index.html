@@ -83,7 +83,12 @@
         $scope.minutesPerPerson = 2;
         $scope.mustPlaySounds = true;
         $scope.minutesToStart = function() {
-            return $scope.peopleOnDaily * $scope.minutesPerPerson;
+            if ($scope.peopleOnDaily != undefined && $scope.minutesPerPerson != undefined) {
+                return $scope.peopleOnDaily * $scope.minutesPerPerson;
+            }
+            else {
+                return 1;
+            }  
         };
 
     });
