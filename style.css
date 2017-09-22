@@ -7,14 +7,16 @@
 		margin-top: -20px;
 	}
 	
-.configs{
-		width: 700px;
-		margin: 15px;
+.controllers{
+		margin-left: 30 !important;
 		position: relative;
+		width: 700px;
 	}
 
 .btn{
-	margin: 15px;
+	margin-top: 30px;
+	margin-left: 15px;
+	margin-right: 15px;
 }
 
 .text-input{
@@ -23,28 +25,30 @@
 	font-size: 20px !important;
 }
 
-.my-checkbox{
-	margin-top: 10px;
-	width: 100px;
-}
-
 label {
   display: block;
-  padding-left: 15px;
+	margin-bottom : 0px !important;
+	font-weight: normal !important;
 }
 label input {
   width: 13px;
   height: 13px;
-  padding: 0;
+  padding: 0 !important;
   vertical-align: -3px;
   top: -1px;
   *overflow: hidden;
 }
 
+.check-box-out {
+  display: block;
+  padding-left: 15px;
+	margin-top: 40px;
+}
+
 .finished-message{
 	margin-top: 100px;
 	color:#FFF;
-	font-size:200px;
+	font-size:175px;
 	font-family: Cambria;
 	text-align:center;
 
@@ -53,4 +57,60 @@ label input {
 
 @keyframes blinker {  
   50% { opacity: 0; }
+}
+
+.input-modal{
+	width: 65px !important;
+}
+
+.span-label-modal{
+	position: absolute;
+  width: 300px;
+  margin-top: 7px;
+  margin-left: 7px;
+}
+
+.input-group-modal{
+	margin-bottom: 20px;
+}
+
+.config-button{
+	  cursor: pointer;
+    position: initial;
+    vertical-align: -webkit-baseline-middle;
+    margin-right: 15px;
+		margin-top: 20px !important;
+}
+
+.modal-body{
+	margin: 20px;
+	padding: 0px !important;
+}
+
+.modal-title{
+	font-weight: bold;
+}
+
+.span-title-modal{
+	font-weight: bold;
+}
+
+.config-button {
+	font-size: 30px;
+	background: transparent !important;
+	border: none;
+	box-shadow: none;
+	margin-top: 3px;
+}
+.config-button:focus{
+	outline: none; 
+}
+
+.disabledbutton {
+    pointer-events: none;
+    opacity: 0.4;
+}
+
+.check-box-out{
+
 }

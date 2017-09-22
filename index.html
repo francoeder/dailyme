@@ -3,38 +3,90 @@
     <link rel="stylesheet" type="text/css" href="animate.css">
 </head>
 
-<body style="background-Color:#419D78;">
+<body style="background-Color:#419D78;" ng-app="myApp" ng-controller="myCtrl">
     <div class="master">
         <form>
-            <div class="input-group configs">
-                <input type="number" class="form-control text-input" id="minutesToStart" value="22" min="1" max="59" 
-                title="Enter meeting time in minutes!" onchange="setParamsTimer()" onkeyup="setParamsTimer()"/>
+            <div class="input-group controllers">
+                <button class="glyphicon glyphicon-cog config-button" type="button" id="buttonConfig" onclick="$('#memberModal').modal('show')"></button>
                 <button class="btn btn-primary" type="button" id="buttonPlay" onclick="playTimer()">
                     <i class="glyphicon glyphicon-play"></i> Play Daily</button>
                 <button class="btn btn-danger" type="button" id="buttonPause" onclick="pauseTimer()">
                     <i class="glyphicon glyphicon-pause"></i> Pause Daily</button>
                 <button class="btn btn-warning" type="button" id="buttonReset" onclick="resetTimer()">
                     <i class="glyphicon glyphicon-refresh"></i> Reset Daily</button>
-                <label><input id="mustPlaySound" type="checkbox" checked="true" onchange="fnMustPlaySounds()"> Play Sounds?</label>
+                <label class="check-box-out"><input type="checkbox" checked="true" ng-model="mustPlaySounds"> Play Sounds?</label>
             </div>
         </form>
-        <div class="timer" id="timer"><span id="minutes"></span>:<span id="seconds"></span></div>
-        <div class="finished-message" id="finished-message"><span>Daily Finished!</span></div>
+        <div class="timer" id="timer" style="display:none"><span>{{minutesMaster}}</span>:<span>{{secondsMaster}}</span></div>
+        <div class="finished-message" id="finished-message" style="display:none"><span>Daily Finished!</span></div>
     </div>
+
+    <!-- Modal -->
+    <div class="modal fade" id="memberModal" role="dialog" aria-labelledby="memberModalLabel" aria-hidden="true">
+        <div class="modal-dialog" >
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close" onclick="initApplication()"><span aria-hidden="true">&times;</span>
+                </button>
+                    <h4 class="modal-title" id="memberModalLabel">{{modalTitle}}</h4>
+
+                </div>
+                <div class="modal-body">
+                    <div class="input-group input-group-modal">
+                        <span class="span-title-modal">Please set the parameters below: </span>
+                    </div>
+                    <div class="input-group input-group-modal">
+                        <input type="number" class="form-control input-modal" id="peopleOnDaily" min="1" max="99" ng-model="peopleOnDaily"/>
+                        <span class="span-label-modal">Number of People in the Daily</span>
+                    </div>
+                    <div class="input-group input-group-modal">
+                        <input type="number" class="form-control input-modal" id="minutesPerPerson" min="1" max="99" ng-model="minutesPerPerson"/>
+                        <span class="span-label-modal">Time Limit Per Person (Minutes)</span>
+                    </div>
+                    <div class="input-group input-group-modal">
+                        <label><input type="checkbox" checked="true" ng-model="mustPlaySounds"> Play Sounds?</label>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="initApplication()">Save</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
 </body>
-
-
-<script src="index.js"></script>
-
-
 
 <!-- Latest compiled and minified CSS -->
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
-
 <!-- jQuery library -->
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-
 <!-- Latest compiled JavaScript -->
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.4/angular.min.js"></script>
 <script src="bootstrap-notify.min.js"></script>
+<script src="index.js"></script>
+<script src="modalConfig/modalConfig.js"></script>
+
+<script>
+    var modalTitle = "DailyMe";
+    var minutesMaster;
+    var secondsMaster;
+
+    var app = angular.module('myApp', []);
+    app.controller('myCtrl', function($scope) {
+        $scope.modalTitle = modalTitle;
+        $scope.minutesMaster = minutesMaster;
+        $scope.secondsMaster = secondsMaster;
+        $scope.peopleOnDaily = 10;
+        $scope.minutesPerPerson = 2;
+        $scope.mustPlaySounds = true;
+        $scope.minutesToStart = function() {
+            return $scope.peopleOnDaily * $scope.minutesPerPerson;
+        };
+
+    });
+
+    $('#memberModal').modal({backdrop: 'static', keyboard: false});
+
+</script>
+

@@ -1,6 +1,4 @@
 var isTimerStoped;
-var minutes;
-var seconds;
 
 var minutesToStart;
 var mustPlaySounds;
@@ -8,60 +6,60 @@ var mustPlaySounds;
 var nbaSoundWasPlayed = false;
 
 // Horn Variables
-var minutesToHorn = 2;
-var minutesPassedToHorn = 0;
-
-initApplication();
+var minutesToHorn;
+var minutesPassedToHorn;
 
 function initApplication() {
-  isTimerStoped = true;
-  minutesToStart = document.getElementById('minutesToStart').value;
-  
-  if (minutesToStart === "" || minutesToStart < 1) {
-    minutesToStart = "1";
-    document.getElementById('minutesToStart').value = "1";
-  }
+  var $scope = getScope();
 
-  document.getElementById('minutes').innerHTML = minutesToStart;
-  document.getElementById('seconds').innerHTML = "00";
+  isTimerStoped = true;
+  minutesToStart = $scope.minutesToStart();
+  minutesToHorn = $scope.minutesPerPerson;
+  minutesPassedToHorn = 0;
+
+  $scope.$apply(function() {
+        $scope.minutesMaster = minutesToStart;
+        $scope.secondsMaster = "00";
+    });
 
   document.getElementById("timer").style.display = null;
   document.getElementById("finished-message").style.display = "none";
 
   setButtonsEnable();
-  fnMustPlaySounds();
 }
 
 function goTimer() {
   if (!isTimerStoped) { 
-    var presentTimeMinutes = document.getElementById('minutes').innerHTML;
-    var presentTimeSeconds = document.getElementById('seconds').innerHTML;
-    minutes = presentTimeMinutes;
-    seconds = checkSecond(presentTimeSeconds - 1);
+    var $scope = getScope();
 
-    if(seconds == 59){
-      minutes = minutes - 1;
+    var presentTimeMinutes = $scope.minutesMaster;
+    var presentTimeSeconds = $scope.secondsMaster;
+
+    minutesMaster = presentTimeMinutes;
+    secondsMaster = checkSecond(presentTimeSeconds - 1);
+
+    if(secondsMaster == 59){
+      minutesMaster = minutesMaster - 1;
     }
+    
+    $scope.$apply(function() {
+        $scope.minutesMaster = minutesMaster;
+        $scope.secondsMaster = secondsMaster;
+    });
 
     // Horn things
-    if (presentTimeMinutes != minutes && minutesToStart != presentTimeMinutes) {
+    if (presentTimeMinutes != minutesMaster && minutesToStart != presentTimeMinutes) {
       minutesPassedToHorn += 1;
       if (minutesToHorn == minutesPassedToHorn == 1) {
+        debugger;
         showAlertToNextParticipant();
         playHorn();
         minutesPassedToHorn = 0;
       }
     }
 
-    // NBA things
-    debugger;
-    if (minutes == 0 && seconds == 10 && !nbaSoundWasPlayed) {
-      playNBASound();
-      nbaSoundWasPlayed = true;
-    }
-
     // Finished timer things
-    if(minutes == 0 && seconds == 0){
+    if(minutesMaster == 0 && secondsMaster == 0){
       document.getElementById("timer").style.display = "none";
       document.getElementById("finished-message").style.display = null;
       
@@ -69,21 +67,18 @@ function goTimer() {
       setButtonsEnable("pause");
     }
 
-    document.getElementById('minutes').innerHTML = minutes
-    document.getElementById('seconds').innerHTML = seconds;
-
     setTimeout(goTimer, 1000);
   }
 }
 
 function checkSecond(sec) {
   if (sec < 10 && sec >= 0) {sec = "0" + sec}; // add zero in front of numbers < 10
-  if (sec < 0) {sec = "59"};
+  if (sec < 0) {sec = 59};
   return sec;
 }
 
 function playTimer(){
-  if (minutes == 0 && seconds == 0) {
+  if (minutesMaster == 0 && secondsMaster == 0) {
     resetTimer();
   }
   setButtonsEnable("play");
@@ -121,7 +116,7 @@ function setButtonsEnable(action){
       //buttonReset.Enable = false;
       document.getElementById('buttonReset').setAttribute('disabled', 'disabled');
 
-      document.getElementById('minutesToStart').setAttribute('disabled', 'disabled');
+      document.getElementById('buttonConfig').setAttribute('disabled', 'disabled');
 
       break;
 
@@ -136,25 +131,24 @@ function setButtonsEnable(action){
       // buttonReset.Enable = true;
       document.getElementById('buttonReset').removeAttribute('disabled');
 
-      document.getElementById('minutesToStart').removeAttribute('disabled');
+      document.getElementById('buttonConfig').removeAttribute('disabled');
 
       break;
   }
 }
 
-function fnMustPlaySounds(){
-  mustPlaySounds = document.getElementById('mustPlaySound').checked;
-}
-
 function playHorn(){
-  if (mustPlaySounds) {
+  debugger;
+  var $scope = getScope();
+  if ($scope.mustPlaySounds) {
     var audio = new Audio('sounds/horn.mp3');
     audio.play();
   }
 }
 
 function playNBASound(){
-  if (mustPlaySounds) {
+  var $scope = getScope();
+  if ($scope.mustPlaySounds) {
     var audio = new Audio('sounds/nba-sound.mp3');
     audio.play();
   }
@@ -172,4 +166,10 @@ function showAlertToNextParticipant(){
       align: "right"
     },
   });
+}
+
+function getScope() {
+  var appElement = document.querySelector('[ng-app=myApp]');
+  var $scope = angular.element(appElement).scope();
+  return $scope;
 }
