@@ -158,13 +158,19 @@ function showAlertToNextParticipant(){
   $.notify({
     title: '<strong> Next Participant!</strong>',
     message: " Come on, pass the stick.",
-    icon: "glyphicon glyphicon-hand-right"
+    icon: "avatar.jpg"//"glyphicon glyphicon-hand-right"
   },{
     delay: 3000,
     placement: {
       from: "bottom",
       align: "right"
     },
+    icon_type: 'image',
+    template: '<div data-notify="container" class="col-xs-11 col-sm-3 alert alert-{0}" role="alert">' +
+		'<img data-notify="icon" class="img-circle pull-left">' +
+		'<span data-notify="title">{1}</span>' +
+		'<span data-notify="message">{2}</span>' +
+	  '</div>'
   });
 }
 
