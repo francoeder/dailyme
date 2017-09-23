@@ -9,29 +9,38 @@
     <div class="master">
         <form>
             <div class="input-group controllers">
-                <button class="glyphicon glyphicon-cog config-button" type="button" id="buttonConfig" onclick="$('#memberModal').modal('show')"></button>
+                <button class="glyphicon glyphicon-cog config-button" type="button" id="buttonConfig" onclick="showConfig()"></button>
                 <button class="btn btn-primary" type="button" id="buttonPlay" onclick="playTimer()">
                     <i class="glyphicon glyphicon-play"></i> Play Daily</button>
                 <button class="btn btn-danger" type="button" id="buttonPause" onclick="pauseTimer()">
                     <i class="glyphicon glyphicon-pause"></i> Pause Daily</button>
                 <button class="btn btn-warning" type="button" id="buttonReset" onclick="resetTimer()">
                     <i class="glyphicon glyphicon-refresh"></i> Reset Daily</button>
-                <label class="check-box-out"><input type="checkbox" checked="true" ng-model="mustPlaySounds"> Play Sounds?</label>
             </div>
         </form>
         <div class="container">
             <div class="row">
-                <div class="col-sm-12" style="background-color:yellow;">
+                <div class="panel-current-participant col-md-12">
+                    <div class="current-participant-name col-md-8">
+                        <fieldset style="margin-top: 8px;" ng-show="currentParticipant != ''">
+                            <legend style="font-size:20px; margin-bottom: 0px;">Current Participant</legend>
+                            <div style="margin-top: 25px;">{{currentParticipant}}</div>
+                        </fieldset>
+                    </div>
+                    <div class="current-timer-coutdown col-md-4" ng-show="currentParticipant != ''">
+                        <span>{{minutesParticipant}}</span>:<span>{{secondsParticipant}}
+                    </div>
                     <div class="finished-message" id="finished-message" style="display:none"><span>Daily Finished!</span></div>
                 </div>
             </div>
             <div class="row">
                 <div class="col-sm-8">
-                    <div class="timer" id="timer" style="display:none"><span>{{minutesMaster}}</span>:<span>{{secondsMaster}}</span></div>
+                    <h2 class="timer" id="stopwatch"><time>00:00:00</time></h2>
+                    <!-- <div class="timer" id="timer" style="display:none"><span>{{minutesMaster}}</span>:<span>{{secondsMaster}}</span></div> -->
                 </div>
                 <div class="col-sm-4">
-                    <button class="btn btn-warning" type="button" ng-click="removeItemFromPeopleList(0)">
-                            <i class="glyphicon glyphicon-trash"></i>Remove 1st to Test</button>
+                    <button class="btn btn-warning btn-next-participant" type="button" id="buttonNextParticipant" ng-click="nextParticipant()">
+                        Next Participant <i class="glyphicon glyphicon-arrow-right"></i></button>
                     <div class="panel panel-info">
                         <div class="panel-heading box box-yellow">
                             <h3 class="panel-title">Participants List</h3>
@@ -44,8 +53,6 @@
                         </div>
                     </div>  
                 </div>
-
-
             </div>
         </div>
     </div>
@@ -62,7 +69,7 @@
                 <div class="modal-body">
                     <div>
                         <div class="input-group input-margin-top">
-                            <input type="text" class="form-control" id="nameToAdd" ng-model="peopleToAdd" placeholder="Input here the name of person to add"/>
+                            <input type="text" class="form-control" id="nameToAdd" maxlength="20" ng-model="peopleToAdd" placeholder="Input here the name of person to add"/>
                             <span class="input-group-addon" ng-click="addItemToPeopleList(peopleToAdd)" style="cursor:pointer;"><i class="glyphicon glyphicon-plus"></i></span>
                         </div>
                         

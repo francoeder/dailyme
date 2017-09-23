@@ -15,6 +15,9 @@ app.controller('myCtrl', function ($scope) {
     $scope.minutesMaster = minutesMaster;
     $scope.secondsMaster = secondsMaster;
     $scope.minutesPerPerson = 2;
+    $scope.minutesParticipant = $scope.minutesPerPerson;
+    $scope.secondsParticipant = "00";
+    $scope.currentParticipant = "";    
     $scope.mustPlaySounds = true;
     $scope.peopleToAdd = "";
     $scope.minutesToStart = function () {
@@ -44,6 +47,30 @@ app.controller('myCtrl', function ($scope) {
       peopleListOriginal = JSON.parse(JSON.stringify($scope.peopleList));
     }
 
+    $scope.wasPaused = false;
+
+    $scope.nextParticipant = function () {
+      if ($scope.peopleList.length > 0) {
+        if (!$scope.wasPaused) {
+          var currentParticipantName = $scope.peopleList[0].name;
+          $scope.currentParticipant = currentParticipantName;
+          $scope.removeItemFromPeopleList(0);
+          $scope.minutesParticipant = $scope.minutesPerPerson;
+          $scope.secondsParticipant = "00";
+        }
+      }
+    };
+
+    $scope.timerRunning = true;
+    $scope.startTimer = function (){
+        $scope.$broadcast('timer-start');
+        $scope.timerRunning = true;
+    };
+    $scope.stopTimer = function (){
+        $scope.$broadcast('timer-stop');
+        $scope.timerRunning = false;
+    };
+
 });
 
 $('#memberModal').modal({ backdrop: 'static', keyboard: false });
@@ -55,7 +82,6 @@ function initApplication() {
 
   saveListOfPeopleInLocalStorage();
 
-
   isTimerStoped = true;
   minutesToStart = $scope.minutesToStart();
   minutesToHorn = $scope.minutesPerPerson;
@@ -64,12 +90,42 @@ function initApplication() {
   $scope.$apply(function() {
         $scope.minutesMaster = minutesToStart;
         $scope.secondsMaster = "00";
+        $scope.wasPaused = false;
     });
 
-  document.getElementById("timer").style.display = null;
-  document.getElementById("finished-message").style.display = "none";
+  // document.getElementById("timer").style.display = null;
+  // document.getElementById("finished-message").style.display = "none";
 
   setButtonsEnable();
+}
+
+function goTimerParticipants() {
+  if (!isTimerStoped) {
+    var $scope = getScope();
+
+    var presentTimeMinutes = $scope.minutesParticipant;
+    var presentTimeSeconds = $scope.secondsParticipant;
+
+    minutesParticipant = presentTimeMinutes;
+    secondsParticipant = checkSecond(presentTimeSeconds - 1);
+
+    if(secondsParticipant == 59){
+      minutesParticipant = minutesParticipant - 1;
+    }
+    
+    $scope.$apply(function() {
+        $scope.minutesParticipant = minutesParticipant;
+        $scope.secondsParticipant = secondsParticipant;
+    });
+
+    if (minutesParticipant == 0 && secondsParticipant == 0) {
+      $scope.nextParticipant();
+      showAlertToNextParticipant();
+      playHorn();
+    }
+
+    setTimeout(goTimerParticipants, 1000);
+  }
 }
 
 function goTimer() {
@@ -121,26 +177,45 @@ function checkSecond(sec) {
 }
 
 function playTimer(){
+  var $scope = getScope();
+
   if (minutesMaster == 0 && secondsMaster == 0) {
     resetTimer();
   }
   setButtonsEnable("play");
+  // goTimer();
+
+  $scope.nextParticipant();
   isTimerStoped = false;
-  goTimer();
+  $scope.wasPaused = false;
+
+  goTimerParticipants();
+  timer();
 }
 
 function pauseTimer(){
-  document.getElementById("timer").style.display = null;
-  document.getElementById("finished-message").style.display = "none";
+  // document.getElementById("timer").style.display = null;
+  // document.getElementById("finished-message").style.display = "none";
+  var $scope = getScope();
+  $scope.wasPaused = true;
   setButtonsEnable("pause");
   isTimerStoped = true;
+
+  clearTimeout(t);
 }
 
 function resetTimer(){
   if(peopleListOriginal.length > 0){
     var $scope = getScope();
-
     $scope.peopleList = JSON.parse(JSON.stringify(peopleListOriginal));
+    $scope.$apply(function() {
+        $scope.currentParticipant = "";
+        $scope.minutesParticipant = $scope.minutesPerPerson;
+        $scope.secondsParticipant = "00";
+    });
+
+    stopWatch.textContent = "00:00:00";
+    seconds = 0; minutes = 0; hours = 0;
   }
 
   pauseTimer();
@@ -167,6 +242,8 @@ function setButtonsEnable(action){
 
       document.getElementById('buttonConfig').setAttribute('disabled', 'disabled');
 
+      document.getElementById('buttonNextParticipant').removeAttribute('disabled');
+
       break;
 
     default:
@@ -181,6 +258,8 @@ function setButtonsEnable(action){
       document.getElementById('buttonReset').removeAttribute('disabled');
 
       document.getElementById('buttonConfig').removeAttribute('disabled');
+
+      document.getElementById('buttonNextParticipant').setAttribute('disabled', 'disabled');
 
       break;
   }
@@ -203,17 +282,20 @@ function playNBASound(){
 }
 
 function showAlertToNextParticipant(){
+  var $scope = getScope();
+  var currentParticipantName = $scope.currentParticipant;
+
   $.notify({
-    title: '<strong> Next Participant!</strong>',
-    message: " Come on, pass the stick.",
-    icon: "avatar.jpg"//"glyphicon glyphicon-hand-right"
+    title: '<strong> '+ currentParticipantName + '</strong>',
+    message: ", is your time!",
+    icon: "glyphicon glyphicon-hand-right"
   },{
     delay: 3000,
     placement: {
       from: "bottom",
       align: "right"
     },
-    icon_type: 'image',
+    // icon_type: 'image',
     template: '<div data-notify="container" class="col-xs-11 col-sm-3 alert alert-{0}" role="alert">' +
 		'<img data-notify="icon" class="img-circle pull-left">' +
 		'<span data-notify="title">{1}</span>' +
@@ -229,8 +311,41 @@ function saveListOfPeopleInLocalStorage() {
   }
 }
 
+function showConfig(){
+  resetTimer();
+  $('#memberModal').modal('show');
+}
+
 function getScope() {
   var appElement = document.querySelector('[ng-app=myApp]');
   var $scope = angular.element(appElement).scope();
   return $scope;
 }
+
+var stopWatch = document.getElementsByTagName('h2')[0],
+start = document.getElementById('start'),
+stop = document.getElementById('stop'),
+clear = document.getElementById('clear'),
+seconds = 0, minutes = 0, hours = 0,
+t;
+
+function add() {
+  seconds++;
+  if (seconds >= 60) {
+      seconds = 0;
+      minutes++;
+      if (minutes >= 60) {
+          minutes = 0;
+          hours++;
+      }
+  }
+
+  stopWatch.textContent = (hours ? (hours > 9 ? hours : "0" + hours) : "00") + ":" + (minutes ? (minutes > 9 ? minutes : "0" + minutes) : "00") + ":" + (seconds > 9 ? seconds : "0" + seconds);
+
+  timer();
+}
+
+function timer() {
+  t = setTimeout(add, 1000);
+}
+

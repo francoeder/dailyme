@@ -1,9 +1,10 @@
 .timer{
 		background-color:#419D78;
 		color:#FFF;
-		font-size:200px;
+		font-size:150px;
 		font-family: Cambria;
 		text-align:center;
+		margin-top: 125px;
 	}
 	
 .controllers{
@@ -177,6 +178,7 @@ h2 {
 
 .panel-heading{
 	padding: 0px !important;
+	border-bottom: 1px solid transparent !important;
 }
 
 .panel-info>.panel-heading {
@@ -211,4 +213,30 @@ h2 {
 
 .input-person-modal{
 	width: 165px !important;
+}
+
+.panel-current-participant{
+	background-color: white;
+	border-radius: 15px;
+	height: 200px !important;
+	box-shadow: 0px 1px 30px #003507;
+	margin-top: 25px;
+}
+
+.current-participant-name{
+	font-size:75px; 
+	color:black;
+	height: 50px;
+	text-overflow: ellipsis ellipsis;
+}
+
+.current-timer-coutdown{
+	font-size:150px; 
+	color:red;
+	padding-left: 40px !important;
+}
+
+.btn-next-participant{
+	width: 150px;
+	margin-left: 210px !important;
 }
