@@ -125,7 +125,8 @@ label input {
 	margin: 1px 0;
 	border: 1px solid #444;
 	border-radius: 5px;
-	background-color: khaki;
+	border-color: moccasin;
+	background-image: linear-gradient(to bottom,#fcf8e3 0,#faf2cc 100%);
 	font-size: 1.1em;
 	font-weight: normal;
 	text-align: left;
@@ -133,12 +134,14 @@ label input {
 }
 
 .person-item-modal {
-	width: 228px;
+	width: 535px;
 	padding: 5px 10px;
 	margin: 1px 0;
+	margin-left: 2px;
 	border: 1px solid #444;
 	border-radius: 5px;
-	background-color: khaki;
+	border-color: moccasin;
+	background-image: linear-gradient(to bottom,#fcf8e3 0,#faf2cc 100%);
 	font-size: 1.1em;
 	font-weight: normal;
 	text-align: left;
@@ -165,14 +168,25 @@ h2 {
 }
 
 .panel-title{
-	background-color:#00CCFF;
+	background-image: linear-gradient(to bottom,#007cbe 0,#0069a2 100%);
 	text-align: center;
     padding: 10px;
-    border-radius: 4px;
+	border-radius: 2px;
+	color: white !important;
 }
 
 .panel-heading{
 	padding: 0px !important;
+}
+
+.panel-info>.panel-heading {
+    color: #31708f;
+    background-color: white !important;
+    border-color: azure;
+}
+
+.panel-info-daily{
+	border-color: #0069a2;
 }
 
 .screen{

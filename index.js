@@ -1,16 +1,60 @@
 var isTimerStoped;
-
 var minutesToStart;
 var mustPlaySounds;
-
 var nbaSoundWasPlayed = false;
-
-// Horn Variables
 var minutesToHorn;
 var minutesPassedToHorn;
+var modalTitle = "DailyMe";
+var peopleListOriginal = JSON.parse(localStorage.getItem("DailyMeLastPeopleList") || "[]");
+var minutesMaster;
+var secondsMaster;
+
+var app = angular.module('myApp', ['ui.sortable']);
+app.controller('myCtrl', function ($scope) {
+    $scope.modalTitle = modalTitle;
+    $scope.minutesMaster = minutesMaster;
+    $scope.secondsMaster = secondsMaster;
+    $scope.minutesPerPerson = 2;
+    $scope.mustPlaySounds = true;
+    $scope.peopleToAdd = "";
+    $scope.minutesToStart = function () {
+        if (peopleListOriginal != undefined && $scope.minutesPerPerson != undefined) {
+            return peopleListOriginal.length * $scope.minutesPerPerson;
+        }
+        else {
+            return 1;
+        }
+    };
+
+    $scope.peopleList = JSON.parse(JSON.stringify(peopleListOriginal));
+
+    $scope.addItemToPeopleList = function(name){
+        if (name != "") {
+            var people = {name: name};
+            $scope.peopleList.push(people);
+            $scope.peopleToAdd = "";   
+        }
+    }
+    
+    $scope.removeItemFromPeopleList = function(index){
+        $scope.peopleList.splice(index, 1);
+    }
+
+    $scope.setOriginalListOfPeople = function(){
+      peopleListOriginal = JSON.parse(JSON.stringify($scope.peopleList));
+    }
+
+});
+
+$('#memberModal').modal({ backdrop: 'static', keyboard: false });
 
 function initApplication() {
   var $scope = getScope();
+
+  $scope.setOriginalListOfPeople();
+
+  saveListOfPeopleInLocalStorage();
+
 
   isTimerStoped = true;
   minutesToStart = $scope.minutesToStart();
@@ -51,7 +95,6 @@ function goTimer() {
     if (presentTimeMinutes != minutesMaster && minutesToStart != presentTimeMinutes) {
       minutesPassedToHorn += 1;
       if (minutesToHorn == minutesPassedToHorn == 1) {
-        debugger;
         showAlertToNextParticipant();
         playHorn();
         minutesPassedToHorn = 0;
@@ -94,6 +137,12 @@ function pauseTimer(){
 }
 
 function resetTimer(){
+  if(peopleListOriginal.length > 0){
+    var $scope = getScope();
+
+    $scope.peopleList = JSON.parse(JSON.stringify(peopleListOriginal));
+  }
+
   pauseTimer();
   initApplication();
 }
@@ -138,7 +187,6 @@ function setButtonsEnable(action){
 }
 
 function playHorn(){
-  debugger;
   var $scope = getScope();
   if ($scope.mustPlaySounds) {
     var audio = new Audio('sounds/horn.mp3');
@@ -172,6 +220,13 @@ function showAlertToNextParticipant(){
 		'<span data-notify="message">{2}</span>' +
 	  '</div>'
   });
+}
+
+function saveListOfPeopleInLocalStorage() {
+
+  if (typeof(Storage) !== "undefined") {
+    localStorage.setItem("DailyMeLastPeopleList", JSON.stringify(peopleListOriginal));
+  }
 }
 
 function getScope() {

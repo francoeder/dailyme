@@ -30,6 +30,8 @@
                     <div class="timer" id="timer" style="display:none"><span>{{minutesMaster}}</span>:<span>{{secondsMaster}}</span></div>
                 </div>
                 <div class="col-sm-4">
+                    <button class="btn btn-warning" type="button" ng-click="removeItemFromPeopleList(0)">
+                            <i class="glyphicon glyphicon-trash"></i>Remove 1st to Test</button>
                     <div class="panel panel-info">
                         <div class="panel-heading box box-yellow">
                             <h3 class="panel-title">Participants List</h3>
@@ -53,39 +55,21 @@
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close" onclick="initApplication()"><span aria-hidden="true">&times;</span>
-                </button>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close" onclick="initApplication()">
+                        <span aria-hidden="true">&times;</span></button>
                     <h4 class="modal-title" id="memberModalLabel">{{modalTitle}}</h4>
-
                 </div>
                 <div class="modal-body">
-                    <div class="col-sm-6">
-                        <div class="input-group input-group-modal">
-                            <span class="span-title-modal">Please set the parameters below: </span>
-                        </div>
-                        <div class="input-group input-group-modal">
-                            <input type="number" class="form-control input-modal" id="peopleOnDaily" min="1" max="99" ng-model="peopleOnDaily" />
-                            <span class="span-label-modal">Number of People in the Daily</span>
-                        </div>
-                        <div class="input-group input-group-modal">
-                            <input type="number" class="form-control input-modal" id="minutesPerPerson" min="1" max="99" ng-model="minutesPerPerson"
-                            />
-                            <span class="span-label-modal">Time Limit Per Person (Minutes)</span>
-                        </div>
-                        <div class="input-group input-group-modal">
-                            <label><input type="checkbox" checked="true" ng-model="mustPlaySounds"> Play Sounds?</label>
-                        </div>
-                    </div>
-                    <div class="col-sm-6">
+                    <div>
                         <div class="input-group input-margin-top">
-                            <input type="text" class="form-control" id="nameToAdd" ng-model="peopleToAdd"/>
+                            <input type="text" class="form-control" id="nameToAdd" ng-model="peopleToAdd" placeholder="Input here the name of person to add"/>
                             <span class="input-group-addon" ng-click="addItemToPeopleList(peopleToAdd)" style="cursor:pointer;"><i class="glyphicon glyphicon-plus"></i></span>
                         </div>
                         
-                        <div class="panel panel-info">
+                        <div class="panel panel-info panel-info-daily">
                             <div class="panel-heading box box-yellow">
                                 <h3 class="panel-title">Participants List</h3>
-                                <div style="overflow-y: scroll; height:250px;">
+                                <div style="overflow-y: scroll; height:150px;">
                                     <div ui-sortable="sortableOptionsList" class="screen" ng-model="peopleList">
                                         <div class="person-item-modal" ng-repeat="people in peopleList">
                                             {{$index + 1}} {{people.name}} <span class="glyphicon glyphicon-trash item-glyphicon" ng-click="removeItemFromPeopleList($index)"></span>
@@ -94,7 +78,24 @@
                                 </div>
                                 <div style="clear: both;"></div>
                             </div>
-                        </div>  
+                        </div> 
+                    </div>
+                    <div>
+                        <!-- <div class="input-group input-group-modal">
+                            <span class="span-title-modal">Please set the parameters below: </span>
+                        </div> -->
+                        <!-- <div class="input-group input-group-modal">
+                            <input type="number" class="form-control input-modal" id="peopleOnDaily" min="1" max="99" ng-model="peopleOnDaily" />
+                            <span class="span-label-modal">Number of People in the Daily</span>
+                        </div> -->
+                        <div class="input-group input-group-modal">
+                            <input type="number" class="form-control input-modal" id="minutesPerPerson" min="1" max="99" ng-model="minutesPerPerson"
+                            />
+                            <span class="span-label-modal">Minutes Limit Per Person</span>
+                        </div>
+                        <div class="input-group input-group-modal">
+                            <label><input type="checkbox" checked="true" ng-model="mustPlaySounds"> Play Sounds?</label>
+                        </div>
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -116,60 +117,6 @@
 <script src="bootstrap-notify.min.js"></script>
 <link rel="stylesheet" href="jquery-ui.css">
 <script src="jquery-ui.min.js"></script>
-<script src="https://rawgithub.com/angular-ui/ui-sortable/master/src/sortable.js"></script>
+<script src="sortable.js"></script>
+<script src="jquery.cookie.js"></script>
 <script src="index.js"></script>
-
-<script>
-    var modalTitle = "DailyMe";
-    var minutesMaster;
-    var secondsMaster;
-
-    var app = angular.module('myApp', ['ui.sortable']);
-    app.controller('myCtrl', function ($scope) {
-        $scope.modalTitle = modalTitle;
-        $scope.minutesMaster = minutesMaster;
-        $scope.secondsMaster = secondsMaster;
-        $scope.peopleOnDaily = 10;
-        $scope.minutesPerPerson = 2;
-        $scope.mustPlaySounds = true;
-        $scope.peopleToAdd = "";
-        $scope.minutesToStart = function () {
-            if ($scope.peopleOnDaily != undefined && $scope.minutesPerPerson != undefined) {
-                return $scope.peopleOnDaily * $scope.minutesPerPerson;
-            }
-            else {
-                return 1;
-            }
-        };
-
-        $scope.peopleList = [
-            // {
-            // name: 'Wonder Woman'
-            // }, {
-            // name: 'Thor'
-            // }, {
-            // name: 'SpiderMan'
-            // }, {
-            // name: 'IronMan'
-            // }, {
-            // name: 'Hulk'
-            // }
-        ];
-
-        $scope.addItemToPeopleList = function(name){
-            if (name != "") {
-                var people = {name: name};
-                $scope.peopleList.push(people);
-                $scope.peopleToAdd = "";   
-            }
-        }
-        
-        $scope.removeItemFromPeopleList = function(index){
-            $scope.peopleList.splice(index, 1);
-        }
-
-    });
-
-    $('#memberModal').modal({ backdrop: 'static', keyboard: false });
-
-</script>
