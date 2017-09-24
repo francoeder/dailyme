@@ -35,13 +35,15 @@
             </div>
             <div class="row">
                 <div class="col-sm-8">
+                    <!-- <button class="btn btn-info btn-next-participant" type="button" id="buttonNextParticipant" ng-click="nextParticipant()">
+                        <span>Participant Done! </span><i class="glyphicon glyphicon-thumbs-up"></i>
+                    </button> -->
+                    <img class="btn-next-participant" src="images/done.png" id="buttonNextParticipant" ng-click="nextParticipant()">
                     <h2 class="timer" id="stopwatch"><time>00:00:00</time></h2>
                     <!-- <div class="timer" id="timer" style="display:none"><span>{{minutesMaster}}</span>:<span>{{secondsMaster}}</span></div> -->
                 </div>
                 <div class="col-sm-4">
-                    <button class="btn btn-warning btn-next-participant" type="button" id="buttonNextParticipant" ng-click="nextParticipant()">
-                        Next Participant <i class="glyphicon glyphicon-arrow-right"></i></button>
-                    <div class="panel panel-info">
+                    <div class="panel panel-info panel-info-principal">
                         <div class="panel-heading box box-yellow">
                             <h3 class="panel-title">Participants List</h3>
                             <div style="overflow-y: scroll; height:250px;">

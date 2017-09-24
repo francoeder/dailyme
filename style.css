@@ -4,7 +4,6 @@
 		font-size:150px;
 		font-family: Cambria;
 		text-align:center;
-		margin-top: 125px;
 	}
 	
 .controllers{
@@ -181,6 +180,10 @@ h2 {
 	border-bottom: 1px solid transparent !important;
 }
 
+.panel-info-principal{
+	margin-top: 25px;
+}
+
 .panel-info>.panel-heading {
     color: #31708f;
     background-color: white !important;
@@ -237,6 +240,7 @@ h2 {
 }
 
 .btn-next-participant{
-	width: 150px;
-	margin-left: 210px !important;
+	width: 50px;
+	margin-top: 25px;
+	cursor: pointer;
 }

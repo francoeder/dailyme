@@ -9,6 +9,8 @@ var peopleListOriginal = JSON.parse(localStorage.getItem("DailyMeLastPeopleList"
 var minutesMaster;
 var secondsMaster;
 
+$('#memberModal').modal({ backdrop: 'static', keyboard: false });
+
 var app = angular.module('myApp', ['ui.sortable']);
 app.controller('myCtrl', function ($scope) {
     $scope.modalTitle = modalTitle;
@@ -47,6 +49,10 @@ app.controller('myCtrl', function ($scope) {
       peopleListOriginal = JSON.parse(JSON.stringify($scope.peopleList));
     }
 
+    $scope.isTheLastParticipant = function(){
+      return $scope.peopleList.length == 0;
+    }
+
     $scope.wasPaused = false;
 
     $scope.nextParticipant = function () {
@@ -57,8 +63,13 @@ app.controller('myCtrl', function ($scope) {
           $scope.removeItemFromPeopleList(0);
           $scope.minutesParticipant = $scope.minutesPerPerson;
           $scope.secondsParticipant = "00";
+
+          
         }
       }
+      // else {
+      //   resetTimer(true);
+      // }
     };
 
     $scope.timerRunning = true;
@@ -73,7 +84,7 @@ app.controller('myCtrl', function ($scope) {
 
 });
 
-$('#memberModal').modal({ backdrop: 'static', keyboard: false });
+
 
 function initApplication() {
   var $scope = getScope();
@@ -119,9 +130,16 @@ function goTimerParticipants() {
     });
 
     if (minutesParticipant == 0 && secondsParticipant == 0) {
-      $scope.nextParticipant();
-      showAlertToNextParticipant();
-      playHorn();
+      if ($scope.peopleList.length == 0) {
+        setTimeout(function() {
+          resetTimer(true);  
+        }, 1000);
+      }
+      else {
+        $scope.nextParticipant();
+        showAlertToNextParticipant();
+        playHorn();
+      }
     }
 
     setTimeout(goTimerParticipants, 1000);
@@ -189,7 +207,11 @@ function playTimer(){
   isTimerStoped = false;
   $scope.wasPaused = false;
 
-  goTimerParticipants();
+  setTimeout(function() {
+    goTimerParticipants();
+    
+  }, 1000);
+  
   timer();
 }
 
@@ -204,7 +226,7 @@ function pauseTimer(){
   clearTimeout(t);
 }
 
-function resetTimer(){
+function resetTimer(finished = false){
   if(peopleListOriginal.length > 0){
     var $scope = getScope();
     $scope.peopleList = JSON.parse(JSON.stringify(peopleListOriginal));
@@ -214,12 +236,18 @@ function resetTimer(){
         $scope.secondsParticipant = "00";
     });
 
-    stopWatch.textContent = "00:00:00";
-    seconds = 0; minutes = 0; hours = 0;
+    if (!finished) {
+      stopWatch.textContent = "00:00:00";
+      seconds = 0; minutes = 0; hours = 0;
+    }
   }
 
   pauseTimer();
   initApplication();
+}
+
+function finishDaily() {
+  
 }
 
 function setParamsTimer(){
@@ -322,7 +350,7 @@ function getScope() {
   return $scope;
 }
 
-var stopWatch = document.getElementsByTagName('h2')[0],
+var stopWatch = document.getElementById('stopwatch'),
 start = document.getElementById('start'),
 stop = document.getElementById('stop'),
 clear = document.getElementById('clear'),
@@ -348,4 +376,3 @@ function add() {
 function timer() {
   t = setTimeout(add, 1000);
 }
-
