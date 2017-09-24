@@ -8,17 +8,23 @@
 <body style="background-Color:#419D78;" ng-app="myApp" ng-controller="myCtrl">
     <div class="master">
         <form>
-            <div class="input-group controllers">
-                <button class="glyphicon glyphicon-cog config-button" type="button" id="buttonConfig" onclick="showConfig()"></button>
-                <button class="btn btn-primary" type="button" id="buttonPlay" onclick="playTimer()">
-                    <i class="glyphicon glyphicon-play"></i> Play Daily</button>
-                <button class="btn btn-danger" type="button" id="buttonPause" onclick="pauseTimer()">
-                    <i class="glyphicon glyphicon-pause"></i> Pause Daily</button>
-                <button class="btn btn-warning" type="button" id="buttonReset" onclick="resetTimer()">
-                    <i class="glyphicon glyphicon-refresh"></i> Reset Daily</button>
+            <div class="col-md-12">
+                <div class="input-group controllers">
+                    <button class="glyphicon glyphicon-cog config-button" type="button" id="buttonConfig" onclick="showConfig()"></button>
+                    <button class="btn btn-primary" type="button" id="buttonPlay" onclick="playTimer()">
+                        <i class="glyphicon glyphicon-play"></i> Play Daily</button>
+                    <button class="btn btn-danger" type="button" id="buttonPause" onclick="pauseTimer()">
+                        <i class="glyphicon glyphicon-pause"></i> Pause Daily</button>
+                    <button class="btn btn-warning" type="button" id="buttonReset" onclick="resetTimer()">
+                        <i class="glyphicon glyphicon-refresh"></i> Reset Daily</button>
+                </div>
             </div>
         </form>
         <div class="container">
+            <div class="row">
+                <button class="btn btn-info btn-next-participant" type="button" id="buttonNextParticipant" ng-click="nextParticipant()">
+                        <i class="glyphicon glyphicon-thumbs-up"></i> Participant Done!</button>
+            </div>
             <div class="row">
                 <div class="panel-current-participant col-md-12">
                     <div class="current-participant-name col-md-8">
@@ -35,11 +41,9 @@
             </div>
             <div class="row">
                 <div class="col-sm-8">
-                    <!-- <button class="btn btn-info btn-next-participant" type="button" id="buttonNextParticipant" ng-click="nextParticipant()">
-                        <span>Participant Done! </span><i class="glyphicon glyphicon-thumbs-up"></i>
-                    </button> -->
-                    <img class="btn-next-participant" src="images/done.png" id="buttonNextParticipant" ng-click="nextParticipant()">
-                    <h2 class="timer" id="stopwatch"><time>00:00:00</time></h2>
+                    <h2 class="timer" id="stopwatch">
+                        <time>00:00</time>
+                    </h2>
                     <!-- <div class="timer" id="timer" style="display:none"><span>{{minutesMaster}}</span>:<span>{{secondsMaster}}</span></div> -->
                 </div>
                 <div class="col-sm-4">
@@ -53,7 +57,7 @@
                             </div>
                             <div style="clear: both;"></div>
                         </div>
-                    </div>  
+                    </div>
                 </div>
             </div>
         </div>
@@ -71,32 +75,27 @@
                 <div class="modal-body">
                     <div>
                         <div class="input-group input-margin-top">
-                            <input type="text" class="form-control" id="nameToAdd" maxlength="20" ng-model="peopleToAdd" placeholder="Input here the name of person to add"/>
+                            <input type="text" class="form-control" id="nameToAdd" maxlength="20" ng-keydown="$event.keyCode === 13 && addItemToPeopleList(peopleToAdd)"
+                                ng-model="peopleToAdd" placeholder="Input here the name of person to add" />
                             <span class="input-group-addon" ng-click="addItemToPeopleList(peopleToAdd)" style="cursor:pointer;"><i class="glyphicon glyphicon-plus"></i></span>
                         </div>
-                        
+
                         <div class="panel panel-info panel-info-daily">
                             <div class="panel-heading box box-yellow">
                                 <h3 class="panel-title">Participants List</h3>
                                 <div style="overflow-y: scroll; height:150px;">
                                     <div ui-sortable="sortableOptionsList" class="screen" ng-model="peopleList">
                                         <div class="person-item-modal" ng-repeat="people in peopleList">
-                                            {{$index + 1}} {{people.name}} <span class="glyphicon glyphicon-trash item-glyphicon" ng-click="removeItemFromPeopleList($index)"></span>
+                                            {{$index + 1}} {{people.name}} <span class="glyphicon glyphicon-trash item-glyphicon"
+                                                ng-click="removeItemFromPeopleList($index)"></span>
                                         </div>
                                     </div>
                                 </div>
                                 <div style="clear: both;"></div>
                             </div>
-                        </div> 
+                        </div>
                     </div>
                     <div>
-                        <!-- <div class="input-group input-group-modal">
-                            <span class="span-title-modal">Please set the parameters below: </span>
-                        </div> -->
-                        <!-- <div class="input-group input-group-modal">
-                            <input type="number" class="form-control input-modal" id="peopleOnDaily" min="1" max="99" ng-model="peopleOnDaily" />
-                            <span class="span-label-modal">Number of People in the Daily</span>
-                        </div> -->
                         <div class="input-group input-group-modal">
                             <input type="number" class="form-control input-modal" id="minutesPerPerson" min="1" max="99" ng-model="minutesPerPerson"
                             />
@@ -108,7 +107,24 @@
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="initApplication()">Save</button>
+                    <button type="button" class="btn btn-primary" data-dismiss="modal" ng-show="dailyFinished == true" onclick="initApplication()">Save</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Message -->
+    <div class="modal fade" id="memberModalContainerMessage" role="dialog" aria-labelledby="memberModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title" id="memberModalLabel">{{modalTitle}}</h4>
+                </div>
+                <div class="modal-body">
+                    <span>{{messageContainer}}</span>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" data-dismiss="modal">Ok</button>
                 </div>
             </div>
         </div>

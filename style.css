@@ -240,7 +240,5 @@ h2 {
 }
 
 .btn-next-participant{
-	width: 50px;
-	margin-top: 25px;
-	cursor: pointer;
+	margin-left: 0px !important;
 }

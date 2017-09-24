@@ -8,6 +8,7 @@ var modalTitle = "DailyMe";
 var peopleListOriginal = JSON.parse(localStorage.getItem("DailyMeLastPeopleList") || "[]");
 var minutesMaster;
 var secondsMaster;
+var messageTimeout = 4000;
 
 $('#memberModal').modal({ backdrop: 'static', keyboard: false });
 
@@ -31,7 +32,14 @@ app.controller('myCtrl', function ($scope) {
         }
     };
 
+    $scope.messageContainer = "";
+
+    $scope.totalTime = "";
+
     $scope.peopleList = JSON.parse(JSON.stringify(peopleListOriginal));
+
+    $scope.dailyFinished = false;
+
 
     $scope.addItemToPeopleList = function(name){
         if (name != "") {
@@ -45,6 +53,12 @@ app.controller('myCtrl', function ($scope) {
         $scope.peopleList.splice(index, 1);
     }
 
+    $scope.addItemToPeopleListOnEnter = function(name) {
+      if (keyEvent.which === 13){
+        $scope.addItemToPeopleList(name);
+      }
+    }
+
     $scope.setOriginalListOfPeople = function(){
       peopleListOriginal = JSON.parse(JSON.stringify($scope.peopleList));
     }
@@ -56,6 +70,7 @@ app.controller('myCtrl', function ($scope) {
     $scope.wasPaused = false;
 
     $scope.nextParticipant = function () {
+      debugger;
       if ($scope.peopleList.length > 0) {
         if (!$scope.wasPaused) {
           var currentParticipantName = $scope.peopleList[0].name;
@@ -64,12 +79,21 @@ app.controller('myCtrl', function ($scope) {
           $scope.minutesParticipant = $scope.minutesPerPerson;
           $scope.secondsParticipant = "00";
 
+          isTimerStoped = true;
+          showAlertToNextParticipant();
+          
+          // setTimeout(function() {
+          //   isTimerStoped = false;
+            
+            
+          // }, messageTimeout);
           
         }
       }
-      // else {
-      //   resetTimer(true);
-      // }
+      else {
+        debugger;
+        finishDaily();
+      }
     };
 
     $scope.timerRunning = true;
@@ -104,9 +128,6 @@ function initApplication() {
         $scope.wasPaused = false;
     });
 
-  // document.getElementById("timer").style.display = null;
-  // document.getElementById("finished-message").style.display = "none";
-
   setButtonsEnable();
 }
 
@@ -131,60 +152,19 @@ function goTimerParticipants() {
 
     if (minutesParticipant == 0 && secondsParticipant == 0) {
       if ($scope.peopleList.length == 0) {
-        setTimeout(function() {
-          resetTimer(true);  
-        }, 1000);
+        finishDaily();
       }
       else {
         $scope.nextParticipant();
-        showAlertToNextParticipant();
         playHorn();
+        setTimeout(function() {
+          setTimeout(goTimerParticipants, 1000);
+        }, messageTimeout);
       }
     }
-
-    setTimeout(goTimerParticipants, 1000);
-  }
-}
-
-function goTimer() {
-  if (!isTimerStoped) { 
-    var $scope = getScope();
-
-    var presentTimeMinutes = $scope.minutesMaster;
-    var presentTimeSeconds = $scope.secondsMaster;
-
-    minutesMaster = presentTimeMinutes;
-    secondsMaster = checkSecond(presentTimeSeconds - 1);
-
-    if(secondsMaster == 59){
-      minutesMaster = minutesMaster - 1;
+    else{
+      setTimeout(goTimerParticipants, 1000);
     }
-    
-    $scope.$apply(function() {
-        $scope.minutesMaster = minutesMaster;
-        $scope.secondsMaster = secondsMaster;
-    });
-
-    // Horn things
-    if (presentTimeMinutes != minutesMaster && minutesToStart != presentTimeMinutes) {
-      minutesPassedToHorn += 1;
-      if (minutesToHorn == minutesPassedToHorn == 1) {
-        showAlertToNextParticipant();
-        playHorn();
-        minutesPassedToHorn = 0;
-      }
-    }
-
-    // Finished timer things
-    if(minutesMaster == 0 && secondsMaster == 0){
-      document.getElementById("timer").style.display = "none";
-      document.getElementById("finished-message").style.display = null;
-      
-      isTimerStoped = true;
-      setButtonsEnable("pause");
-    }
-
-    setTimeout(goTimer, 1000);
   }
 }
 
@@ -201,23 +181,15 @@ function playTimer(){
     resetTimer();
   }
   setButtonsEnable("play");
-  // goTimer();
 
-  $scope.nextParticipant();
   isTimerStoped = false;
   $scope.wasPaused = false;
-
-  setTimeout(function() {
-    goTimerParticipants();
-    
-  }, 1000);
+  $scope.nextParticipant();
   
   timer();
 }
 
 function pauseTimer(){
-  // document.getElementById("timer").style.display = null;
-  // document.getElementById("finished-message").style.display = "none";
   var $scope = getScope();
   $scope.wasPaused = true;
   setButtonsEnable("pause");
@@ -237,7 +209,7 @@ function resetTimer(finished = false){
     });
 
     if (!finished) {
-      stopWatch.textContent = "00:00:00";
+      stopWatch.textContent = "00:00";
       seconds = 0; minutes = 0; hours = 0;
     }
   }
@@ -247,7 +219,17 @@ function resetTimer(finished = false){
 }
 
 function finishDaily() {
-  
+  setTimeout(function() {
+    var $scope = getScope();
+    $scope.$apply(function () {
+      $scope.dailyFinished = true;
+      $scope.messageContainer = "Daily finalizada em " + $scope.totalTime;
+    }) 
+
+    resetTimer(true);
+    showModalMessage();
+    stopWatch.textContent = "00:00"
+;  }, 1000);
 }
 
 function setParamsTimer(){
@@ -313,23 +295,18 @@ function showAlertToNextParticipant(){
   var $scope = getScope();
   var currentParticipantName = $scope.currentParticipant;
 
-  $.notify({
-    title: '<strong> '+ currentParticipantName + '</strong>',
-    message: ", is your time!",
-    icon: "glyphicon glyphicon-hand-right"
-  },{
-    delay: 3000,
-    placement: {
-      from: "bottom",
-      align: "right"
-    },
-    // icon_type: 'image',
-    template: '<div data-notify="container" class="col-xs-11 col-sm-3 alert alert-{0}" role="alert">' +
-		'<img data-notify="icon" class="img-circle pull-left">' +
-		'<span data-notify="title">{1}</span>' +
-		'<span data-notify="message">{2}</span>' +
-	  '</div>'
-  });
+  $scope.messageContainer = currentParticipantName + ", you are the next!"
+  showModalMessage();
+  setTimeout(function() {
+    closeModalMessage();
+    isTimerStoped = false;
+
+    // Chamar o GoTimerParticipants
+    setTimeout(function() {
+      goTimerParticipants();                        
+    }, 1000);
+
+  }, messageTimeout);
 }
 
 function saveListOfPeopleInLocalStorage() {
@@ -342,6 +319,14 @@ function saveListOfPeopleInLocalStorage() {
 function showConfig(){
   resetTimer();
   $('#memberModal').modal('show');
+}
+
+function showModalMessage(){
+  $('#memberModalContainerMessage').modal('show');
+}
+
+function closeModalMessage(){
+  $('#memberModalContainerMessage').modal('toggle');
 }
 
 function getScope() {
@@ -368,7 +353,13 @@ function add() {
       }
   }
 
-  stopWatch.textContent = (hours ? (hours > 9 ? hours : "0" + hours) : "00") + ":" + (minutes ? (minutes > 9 ? minutes : "0" + minutes) : "00") + ":" + (seconds > 9 ? seconds : "0" + seconds);
+  var timeNow = (minutes ? (minutes > 9 ? minutes : "0" + minutes) : "00") + ":" + (seconds > 9 ? seconds : "0" + seconds); 
+  stopWatch.textContent = timeNow; 
+
+  var $scope = getScope();
+  $scope.$apply(function() {
+      $scope.totalTime = timeNow;
+  });
 
   timer();
 }
