@@ -107,7 +107,7 @@
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-primary" data-dismiss="modal" ng-show="dailyFinished == true" onclick="initApplication()">Save</button>
+                    <button type="button" class="btn btn-primary" data-dismiss="modal"  onclick="initApplication()">Save</button>
                 </div>
             </div>
         </div>
@@ -120,11 +120,11 @@
                 <div class="modal-header">
                     <h4 class="modal-title" id="memberModalLabel">{{modalTitle}}</h4>
                 </div>
-                <div class="modal-body">
+                <div class="modal-body message-container">
                     <span>{{messageContainer}}</span>
                 </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-primary" data-dismiss="modal">Ok</button>
+                <div class="modal-footer" ng-show="dailyFinished == true">
+                    <button type="button" class="btn btn-primary"  data-dismiss="modal" ng-click="finishDaily()">Ok</button>
                 </div>
             </div>
         </div>

@@ -242,3 +242,9 @@ h2 {
 .btn-next-participant{
 	margin-left: 0px !important;
 }
+
+.message-container{
+	font-size: 65px;
+	text-align: center;
+	font-weight: bold;
+}

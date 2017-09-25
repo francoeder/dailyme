@@ -8,9 +8,10 @@ var modalTitle = "DailyMe";
 var peopleListOriginal = JSON.parse(localStorage.getItem("DailyMeLastPeopleList") || "[]");
 var minutesMaster;
 var secondsMaster;
-var messageTimeout = 4000;
+var messageTimeout = 5000;
 
 $('#memberModal').modal({ backdrop: 'static', keyboard: false });
+
 
 var app = angular.module('myApp', ['ui.sortable']);
 app.controller('myCtrl', function ($scope) {
@@ -40,6 +41,11 @@ app.controller('myCtrl', function ($scope) {
 
     $scope.dailyFinished = false;
 
+    $scope.finishDaily = function () {
+      $scope.dailyFinished = false;
+      $scope.messageContainer = "";
+      
+    }
 
     $scope.addItemToPeopleList = function(name){
         if (name != "") {
@@ -206,11 +212,13 @@ function resetTimer(finished = false){
         $scope.currentParticipant = "";
         $scope.minutesParticipant = $scope.minutesPerPerson;
         $scope.secondsParticipant = "00";
+        
     });
 
     if (!finished) {
       stopWatch.textContent = "00:00";
       seconds = 0; minutes = 0; hours = 0;
+     
     }
   }
 
@@ -223,7 +231,7 @@ function finishDaily() {
     var $scope = getScope();
     $scope.$apply(function () {
       $scope.dailyFinished = true;
-      $scope.messageContainer = "Daily finalizada em " + $scope.totalTime;
+      $scope.messageContainer = "Total daily time: " + $scope.totalTime;
     }) 
 
     resetTimer(true);
@@ -295,16 +303,16 @@ function showAlertToNextParticipant(){
   var $scope = getScope();
   var currentParticipantName = $scope.currentParticipant;
 
-  $scope.messageContainer = currentParticipantName + ", you are the next!"
+  $scope.messageContainer = "It's " + currentParticipantName + "'s turn!"
   showModalMessage();
   setTimeout(function() {
     closeModalMessage();
     isTimerStoped = false;
 
     // Chamar o GoTimerParticipants
-    setTimeout(function() {
+    // setTimeout(function() {
       goTimerParticipants();                        
-    }, 1000);
+    // }, 1000);
 
   }, messageTimeout);
 }
@@ -322,7 +330,8 @@ function showConfig(){
 }
 
 function showModalMessage(){
-  $('#memberModalContainerMessage').modal('show');
+  // $('#memberModalContainerMessage').modal('show');
+  $('#memberModalContainerMessage').modal({ backdrop: 'static', keyboard: false });
 }
 
 function closeModalMessage(){
