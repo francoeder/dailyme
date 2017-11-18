@@ -6,16 +6,27 @@
 </head>
 
 <body style="background-Color:#419D78;" ng-app="myApp" ng-controller="myCtrl">
+    
     <div class="master">
         <form>
+            <div class="row">
+                <div class="col-md-12" style="position: absolute; margin-top: 15px;">
+                    <div class="col-md-12">
+                        <span class="pull-right"><span class="shortcut">Play / Pause <kbd>Space</kbd></span>
+                    </div>
+                    <div class="col-md-12">
+                        <span class="pull-right"><span class="shortcut">Participant Done / Finish Daily <kbd>Enter</kbd></span>
+                    </div>
+                </div>
+            </div>
             <div class="col-md-12">
-                <div class="input-group controllers">
+                <div class="input-group controllers">    
                     <button class="glyphicon glyphicon-cog config-button" type="button" id="buttonConfig" onclick="showConfig()"></button>
-                    <button class="btn btn-primary" type="button" id="buttonPlay" onclick="playTimer()">
+                    <button class="btn btn-primary btn-controller" type="button" id="buttonPlay" onclick="playTimer()">
                         <i class="glyphicon glyphicon-play"></i> Play Daily</button>
-                    <button class="btn btn-danger" type="button" id="buttonPause" onclick="pauseTimer()">
+                    <button class="btn btn-danger btn-controller" type="button" id="buttonPause" onclick="pauseTimer()">
                         <i class="glyphicon glyphicon-pause"></i> Pause Daily</button>
-                    <button class="btn btn-warning" type="button" id="buttonReset" onclick="resetTimer()">
+                    <button class="btn btn-warning btn-controller" type="button" id="buttonReset" onclick="resetTimer()">
                         <i class="glyphicon glyphicon-refresh"></i> Reset Daily</button>
                 </div>
             </div>
@@ -29,11 +40,11 @@
                 <div class="panel-current-participant col-md-12">
                     <div class="current-participant-name col-md-8">
                         <fieldset style="margin-top: 8px;" ng-show="currentParticipant != ''">
-                            <legend style="font-size:20px; margin-bottom: 0px;">Current Participant</legend>
+                            <legend style="font-size:20px; margin-bottom: 0px;" id="legendCurrentParticipant">Current Participant</legend>
                             <div style="margin-top: 25px;">{{currentParticipant}}</div>
                         </fieldset>
                     </div>
-                    <div class="current-timer-coutdown col-md-4" ng-show="currentParticipant != ''">
+                    <div class="current-timer-coutdown col-md-4" ng-show="currentParticipant != ''" id="participantTimer">
                         <span>{{minutesParticipant}}</span>:<span>{{secondsParticipant}}
                     </div>
                     <div class="finished-message" id="finished-message" style="display:none"><span>Daily Finished!</span></div>
@@ -123,8 +134,8 @@
                 <div class="modal-body message-container">
                     <span>{{messageContainer}}</span>
                 </div>
-                <div class="modal-footer" ng-show="dailyFinished == true">
-                    <button type="button" class="btn btn-primary"  data-dismiss="modal" ng-click="finishDaily()">Ok</button>
+                <div id="okButtonModal" class="modal-footer">
+                    <button type="button" class="btn btn-primary"  data-dismiss="modal" onclick="initApplication()">Ok</button>
                 </div>
             </div>
         </div>
@@ -144,4 +155,5 @@
 <script src="jquery-ui.min.js"></script>
 <script src="sortable.js"></script>
 <script src="jquery.cookie.js"></script>
+<script src="keyboard.js"></script> 
 <script src="index.js"></script>

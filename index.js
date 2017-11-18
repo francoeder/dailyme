@@ -9,6 +9,18 @@ var peopleListOriginal = JSON.parse(localStorage.getItem("DailyMeLastPeopleList"
 var minutesMaster;
 var secondsMaster;
 var messageTimeout = 5000;
+var isStartOfDaily = true;
+var isShowingModal = true;
+var mustInitAlignmentsTime = true;
+var isAlignmentsTime = false;
+var isTimeToFinish = false;
+
+
+$(document).ready(function(){
+  $(document).keypress(function(e){
+    applyKeyEvent(e);
+  })
+})
 
 $('#memberModal').modal({ backdrop: 'static', keyboard: false });
 
@@ -76,7 +88,6 @@ app.controller('myCtrl', function ($scope) {
     $scope.wasPaused = false;
 
     $scope.nextParticipant = function () {
-      debugger;
       if ($scope.peopleList.length > 0) {
         if (!$scope.wasPaused) {
           var currentParticipantName = $scope.peopleList[0].name;
@@ -88,17 +99,15 @@ app.controller('myCtrl', function ($scope) {
           isTimerStoped = true;
           showAlertToNextParticipant();
           
-          // setTimeout(function() {
-          //   isTimerStoped = false;
-            
-            
-          // }, messageTimeout);
-          
         }
       }
       else {
-        debugger;
-        finishDaily();
+        if (mustInitAlignmentsTime) {
+          alignmentsTime();  
+        }
+        else{
+          finishDaily();
+        }
       }
     };
 
@@ -123,10 +132,15 @@ function initApplication() {
 
   saveListOfPeopleInLocalStorage();
 
+  mustInitAlignmentsTime = true;
+  isAlignmentsTime = false;
+  isTimeToFinish = false;
+  isShowingModal = false;
   isTimerStoped = true;
   minutesToStart = $scope.minutesToStart();
   minutesToHorn = $scope.minutesPerPerson;
   minutesPassedToHorn = 0;
+  isStartOfDaily = true;
 
   $scope.$apply(function() {
         $scope.minutesMaster = minutesToStart;
@@ -135,6 +149,8 @@ function initApplication() {
     });
 
   setButtonsEnable();
+
+  $('#okButtonModal').hide();
 }
 
 function goTimerParticipants() {
@@ -163,9 +179,6 @@ function goTimerParticipants() {
       else {
         $scope.nextParticipant();
         playHorn();
-        setTimeout(function() {
-          setTimeout(goTimerParticipants, 1000);
-        }, messageTimeout);
       }
     }
     else{
@@ -190,9 +203,19 @@ function playTimer(){
 
   isTimerStoped = false;
   $scope.wasPaused = false;
-  $scope.nextParticipant();
+
+  if (isStartOfDaily) {
+    $scope.nextParticipant();
+    isStartOfDaily = false;
+    timer();
+  }
+  else{
+    setTimeout(function() {
+      goTimerParticipants();  
+    }, 1000);
+  }
   
-  timer();
+  
 }
 
 function pauseTimer(){
@@ -201,19 +224,19 @@ function pauseTimer(){
   setButtonsEnable("pause");
   isTimerStoped = true;
 
-  clearTimeout(t);
+  // clearTimeout(t);
 }
 
 function resetTimer(finished = false){
   if(peopleListOriginal.length > 0){
     var $scope = getScope();
     $scope.peopleList = JSON.parse(JSON.stringify(peopleListOriginal));
-    $scope.$apply(function() {
+    // $scope.$apply(function() {
         $scope.currentParticipant = "";
         $scope.minutesParticipant = $scope.minutesPerPerson;
         $scope.secondsParticipant = "00";
         
-    });
+    // });
 
     if (!finished) {
       stopWatch.textContent = "00:00";
@@ -224,6 +247,41 @@ function resetTimer(finished = false){
 
   pauseTimer();
   initApplication();
+  clearTimeout(t);
+  isStartOfDaily = true;
+
+  $('#buttonNextParticipant').html('Participant Done!');
+  $('#legendCurrentParticipant').html('Current Participant');
+  $('#participantTimer').show();
+  $('#okButtonModal').show();
+}
+
+function alignmentsTime()
+{
+  playHorn();
+  isAlignmentsTime = true;
+  mustInitAlignmentsTime = false;
+
+  $('#buttonNextParticipant').html('Finish Daily!');
+  $('#legendCurrentParticipant').html('');
+  $('#participantTimer').hide();
+  
+  var $scope = getScope();
+  $scope.removeItemFromPeopleList(0);
+  $scope.currentParticipant = "Alignments"
+  $scope.minutesParticipant = "";
+  $scope.secondsParticipant = "";
+
+  isTimerStoped = true;
+  
+  $scope.messageContainer = "It's time for Alignments!"
+  
+  showModalMessage();
+  
+  setTimeout(function() {
+    closeModalMessage();
+  }, messageTimeout);
+  
 }
 
 function finishDaily() {
@@ -232,12 +290,18 @@ function finishDaily() {
     $scope.$apply(function () {
       $scope.dailyFinished = true;
       $scope.messageContainer = "Total daily time: " + $scope.totalTime;
-    }) 
+    })
 
     resetTimer(true);
+    
+    isShowingModal = true;
     showModalMessage();
-    stopWatch.textContent = "00:00"
-;  }, 1000);
+    stopWatch.textContent = "00:00";
+    seconds = 0; minutes = 0; hours = 0;
+
+    playHorn2();
+
+;  }, 10);
 }
 
 function setParamsTimer(){
@@ -291,6 +355,14 @@ function playHorn(){
   }
 }
 
+function playHorn2(){
+  var $scope = getScope();
+  if ($scope.mustPlaySounds) {
+    var audio = new Audio('sounds/lets-go-team.mp3');
+    audio.play();
+  }
+}
+
 function playNBASound(){
   var $scope = getScope();
   if ($scope.mustPlaySounds) {
@@ -304,15 +376,15 @@ function showAlertToNextParticipant(){
   var currentParticipantName = $scope.currentParticipant;
 
   $scope.messageContainer = "It's " + currentParticipantName + "'s turn!"
+
   showModalMessage();
+
   setTimeout(function() {
     closeModalMessage();
     isTimerStoped = false;
 
     // Chamar o GoTimerParticipants
-    // setTimeout(function() {
-      goTimerParticipants();                        
-    // }, 1000);
+      goTimerParticipants();
 
   }, messageTimeout);
 }
@@ -326,16 +398,24 @@ function saveListOfPeopleInLocalStorage() {
 
 function showConfig(){
   resetTimer();
+  isShowingModal = true;
   $('#memberModal').modal('show');
 }
 
 function showModalMessage(){
-  // $('#memberModalContainerMessage').modal('show');
+  isShowingModal = true;
   $('#memberModalContainerMessage').modal({ backdrop: 'static', keyboard: false });
 }
 
 function closeModalMessage(){
+  isShowingModal = false;
   $('#memberModalContainerMessage').modal('toggle');
+}
+
+function enableShortcuts() {
+  debugger;
+  isShowingModal = false;
+  isAlignmentsTime = false;
 }
 
 function getScope() {

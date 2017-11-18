@@ -8,7 +8,8 @@
 	}
 	
 .controllers{
-		margin-left: 30 !important;
+		margin-left: 30px !important;
+		margin-top: 20px !important;
 		position: relative;
 		width: 700px;
 	}
@@ -75,11 +76,11 @@ label input {
 }
 
 .config-button{
-	  cursor: pointer;
+	cursor: pointer;
     position: initial;
     vertical-align: -webkit-baseline-middle;
     margin-right: 15px;
-		margin-top: 20px !important;
+	/* margin-top: 20px !important; */
 }
 
 .modal-body{
@@ -100,7 +101,7 @@ label input {
 	background: transparent !important;
 	border: none;
 	box-shadow: none;
-	margin-top: 3px;
+	margin-top: -10px;
 }
 .config-button:focus{
 	outline: none; 
@@ -240,6 +241,10 @@ h2 {
 	padding-left: 40px !important;
 }
 
+.btn-controller{
+	margin-top: 0px !important;
+}
+
 .btn-next-participant{
 	margin-left: 0px !important;
 }
@@ -248,4 +253,8 @@ h2 {
 	font-size: 65px;
 	text-align: center;
 	font-weight: bold;
+}
+
+.shortcut{
+	color: white;
 }
