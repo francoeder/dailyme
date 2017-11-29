@@ -173,13 +173,8 @@ function goTimerParticipants() {
     });
 
     if (minutesParticipant == 0 && secondsParticipant == 0) {
-      if ($scope.peopleList.length == 0) {
-        finishDaily();
-      }
-      else {
         $scope.nextParticipant();
         playHorn();
-      }
     }
     else{
       setTimeout(goTimerParticipants, 1000);
