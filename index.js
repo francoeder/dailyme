@@ -14,7 +14,7 @@ var isShowingModal = true;
 var mustInitAlignmentsTime = true;
 var isAlignmentsTime = false;
 var isTimeToFinish = false;
-
+var startTime;
 
 $(document).ready(function(){
   $(document).keypress(function(e){
@@ -202,6 +202,7 @@ function playTimer(){
   if (isStartOfDaily) {
     $scope.nextParticipant();
     isStartOfDaily = false;
+    startTime = new Date();
     timer();
   }
   else{
@@ -427,15 +428,26 @@ seconds = 0, minutes = 0, hours = 0,
 t;
 
 function add() {
-  seconds++;
-  if (seconds >= 60) {
-      seconds = 0;
-      minutes++;
-      if (minutes >= 60) {
-          minutes = 0;
-          hours++;
-      }
-  }
+  // seconds++;
+  // if (seconds >= 60) {
+  //     seconds = 0;
+  //     minutes++;
+  //     if (minutes >= 60) {
+  //         minutes = 0;
+  //         hours++;
+  //     }
+  // }
+
+  var nowTime = new Date();
+  var difference_ms = nowTime - startTime;
+  difference_ms = difference_ms/1000;
+  seconds = Math.floor(difference_ms % 60);
+  difference_ms = difference_ms/60; 
+  minutes = Math.floor(difference_ms % 60);
+
+  // console.log(startTime + " - " + nowTime);
+  // console.log(mins + " : " + secs);
+
 
   var timeNow = (minutes ? (minutes > 9 ? minutes : "0" + minutes) : "00") + ":" + (seconds > 9 ? seconds : "0" + seconds); 
   stopWatch.textContent = timeNow; 
@@ -450,4 +462,11 @@ function add() {
 
 function timer() {
   t = setTimeout(add, 1000);
+}
+
+function diff_minutes(dt2, dt1)
+{
+  var diff =(dt2.getTime() - dt1.getTime()) / 1000;
+  diff /= 60;
+  return Math.abs(Math.round(diff));
 }
